@@ -1,1 +1,70 @@
+server.port: 8080
+spring:
+  main.allow-bean-definition-overriding: true
+  jackson:
+    serialization.write-dates-as-timestamps: false
+    deserialization.FAIL_ON_UNKNOWN_PROPERTIES: false
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
+  aop:
+    proxy-target-class: false
+  datasource:
+    driver-class-name: 'com.mysql.jdbc.Driver'
+    url: 'jdbc:mysql://localhost:3306/menuapi?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true'
+    username: 'menuapiubr'
+    password: 'startingpassword'
+    hikari:
+      pool-name: '${spring.datasource.username}'
+      connection-timeout: 15000
+      minimum-idle: 10
+      maximum-pool-size: 30
+      leak-detection-threshold: 15000
+      connection-init-sql: 'SELECT 1'
+  jpa:
+    show_sql: false
+    hibernate:
+      type: TRACE
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: 'org.hibernate.dialect.MySQL57InnoDBDialect'
+        connection.release_mode: 'after_transaction'
+        enable_lazy_load_no_trans: true
 
+health.config.enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: 'health,info,mappings,metrics,httptrace,refresh'
+  health:
+    binders:
+      enabled: true
+
+logging.level: true
+logging:
+  level:
+    feign.Logger: TRACE
+    org:
+      hibernate:
+        SQL: ERROR
+        type: ERROR
+      springframework:
+        ws:
+          client:
+            MessageTracing:
+              sent: TRACE
+              received: TRACE
+    io.swagger.models.parameters.AbstractSerializableParameter: ERROR
+
+flyway:
+  database:
+    user: 'root'
+    password: 'root'

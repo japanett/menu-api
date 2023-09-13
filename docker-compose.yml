@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+
+#########
+# MySQL #
+#########
+  mysql:
+    image: mysql:8.0
+    container_name: menu_api.mysql
+    environment:
+      MYSQL_DATABASE: 'menuapi'
+      MYSQL_USER: 'menuapiubr'
+      MYSQL_PASSWORD: 'startingpassword'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+  flyway:
+    image: boxfuse/flyway
+    container_name: menu_api.flyway
+    command: -url=jdbc:mysql://mysql -schemas=menuapi -user=root -password=root -connectRetries=60 migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    depends_on:
+      - mysql
