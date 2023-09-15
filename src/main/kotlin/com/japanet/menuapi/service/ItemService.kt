@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class ItemService(
     private val repository: ItemRepository,
-    private val log: KLogger = KotlinLogging.logger {}
 ) {
 
+    private val log: KLogger = KotlinLogging.logger {}
 }

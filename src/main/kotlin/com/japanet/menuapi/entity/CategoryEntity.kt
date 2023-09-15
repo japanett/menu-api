@@ -16,7 +16,7 @@ class CategoryEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idt_menu")
-    var menu: MenuEntity,
+    var menu: MenuEntity?,
 
     @Column(name = "des_name", nullable = false, updatable = true)
     var name: String?,

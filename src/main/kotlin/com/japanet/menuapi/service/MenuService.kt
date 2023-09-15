@@ -40,4 +40,7 @@ class MenuService(
         return if (pagedResult.content.isNotEmpty()) pagedResult
             else throw MenuNotFoundException("Menu not found with parameters: $request")
     }
+
+    fun retrieveById(menuId: Long) = repository.findById(menuId)
+        .orElseThrow { MenuNotFoundException("Menu not found with id: $menuId") }
 }
