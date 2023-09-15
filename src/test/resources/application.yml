@@ -1,0 +1,44 @@
+wiremock.server.httpsPort: -1
+spring:
+  main.allow-bean-definition-overriding: true
+  aop:
+    proxy-target-class: false
+  datasource:
+    driver-class-name: 'org.h2.Driver'
+    url: 'jdbc:h2:mem:menu_api;DB_CLOSE_DELAY=-1;MODE=MySQL;DB_CLOSE_ON_EXIT=TRUE'
+    username: sa
+    password: ''
+    initialization-mode: embedded
+  jpa:
+    show_sql: true
+    generate-ddl: true
+    hibernate:
+      type: TRACE
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        enable_lazy_load_no_trans: true
+        dialect: 'org.hibernate.dialect.H2Dialect'
+
+server.shutdown: graceful
+
+feign.client.config.default.loggerLevel: FULL
+logging.level: INFO
+logging:
+  level:
+    com.japanet.menuapi.integration.feign.client: DEBUG
+    feign.Logger: TRACE
+    org:
+      hibernate:
+        sql: DEBUG
+        type: TRACE
+      springframework:
+        ws:
+          client:
+            MessageTracing:
+              sent: TRACE
+              received: TRACE
+    io.swagger.models.parameters.AbstractSerializableParameter: ERROR
+

@@ -39,4 +39,13 @@ class MenuEntity(
     @CreationTimestamp
     @Column(name = "dat_creation", nullable = false, updatable = false)
     var datCreation: LocalDateTime? = LocalDateTime.now()
-)
+) {
+    @Override
+    override fun toString(): String {
+        return "MenuEntity(id=${this.id}, " +
+                "establishmentId=${this.establishmentId}, " +
+                "customerId=${this.customerId}, " +
+                "datUpdate=${this.datUpdate}, " +
+                "datCreation=${this.datCreation})"
+    }
+}
