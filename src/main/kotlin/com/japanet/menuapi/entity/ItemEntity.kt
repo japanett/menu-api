@@ -2,7 +2,6 @@ package com.japanet.menuapi.entity
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import java.math.BigInteger
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -20,7 +19,7 @@ class ItemEntity(
     var menu: MenuEntity,
 
     @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    @JoinColumn(name = "idt_category")
+    @JoinColumn(name = "idt_category", nullable = false, updatable = true)
     var category: CategoryEntity?,
 
     @Column(name = "des_name", nullable = false, updatable = true)

@@ -3,6 +3,7 @@ package com.japanet.menuapi.entity
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -17,8 +18,8 @@ class MenuEntity(
     @Column(name = "idt_establishment", nullable = false, updatable = false)
     var establishmentId: Long?,
 
-    @Column(name = "idt_customer", nullable = false, updatable = false)
-    var customerId: Long?,
+    @Column(name = "idt_customer",  columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    var customerId: UUID?,
 
     @OneToMany(mappedBy = "menu", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var items: MutableList<ItemEntity>?,
@@ -28,7 +29,9 @@ class MenuEntity(
 
     /*
 
-      LISTA DE PROMOTIONS
+      LISTA DE PROMOTIONS ?
+
+      LISTA DE ADDITIONAL ITEMS ?
 
      */
 

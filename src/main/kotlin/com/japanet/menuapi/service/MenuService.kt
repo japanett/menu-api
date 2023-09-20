@@ -26,10 +26,8 @@ class MenuService(
         val entity = mapper.toEntity(request)
         repository.save(entity)
     }.onFailure {
-        if (it is DataIntegrityViolationException) {
-            throw DuplicateEstablishmentException("Establishment {${request.establishmentId}} already has a menu")
-        }
-        throw it
+        if (it is DataIntegrityViolationException) throw DuplicateEstablishmentException("Establishment {${request.establishmentId}} already has a menu")
+        else throw it
     }.getOrThrow()
 
     @Logging
@@ -41,6 +39,6 @@ class MenuService(
             else throw MenuNotFoundException("Menu not found with parameters: $request")
     }
 
-    fun retrieveById(menuId: Long) = repository.findById(menuId)
+    fun retrieveById(menuId: Long): MenuEntity = repository.findById(menuId)
         .orElseThrow { MenuNotFoundException("Menu not found with id: $menuId") }
 }

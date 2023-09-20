@@ -8,8 +8,8 @@ import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
@@ -33,13 +33,13 @@ class MenuapiAdvice(
         return ResponseEntity.status(status).body(ErrorResponseWrapper(errors))
     }
 
-    override fun handleMissingServletRequestParameter(
-        ex: MissingServletRequestParameterException,
+    override fun handleHttpMessageNotReadable(
+        ex: HttpMessageNotReadableException,
         headers: HttpHeaders,
         status: HttpStatus,
         request: WebRequest
     ): ResponseEntity<Any> {
-        log.error { "C=${this::class.simpleName}, M=${this::handleMissingServletRequestParameter.name}, e=${ex}" }
+        log.error { "C=${this::class.simpleName}, M=${this::handleHttpMessageNotReadable.name}, e=${ex}" }
         return ResponseEntity.status(status).body(ErrorResponseWrapper(listOf(ErrorResponse("Missing parameters"))))
     }
 
