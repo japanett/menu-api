@@ -20,7 +20,7 @@ class ItemEntity(
     @JoinColumn(name = "idt_menu")
     var menu: MenuEntity,
 
-    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
     @JoinColumn(name = "idt_category", nullable = false, updatable = true)
     var category: CategoryEntity?,
 
