@@ -3,7 +3,7 @@ package com.japanet.menuapi.controller
 import com.japanet.menuapi.AbstractTest
 import com.japanet.menuapi.controller.request.v1.CreateCategoryRequest
 import org.junit.Test
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -25,7 +25,7 @@ class CategoryControllerTest : AbstractTest() {
             name = "Comes e bebes"
         ))
 
-        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(MediaType.APPLICATION_JSON).content(payload))
+        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(APPLICATION_JSON).content(payload))
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.menuId").value(menuId))
@@ -42,7 +42,7 @@ class CategoryControllerTest : AbstractTest() {
             name = "Futrinca"
         ))
 
-        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(MediaType.APPLICATION_JSON).content(payload))
+        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(APPLICATION_JSON).content(payload))
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
@@ -70,6 +70,45 @@ class CategoryControllerTest : AbstractTest() {
 
         super.mockMvc.perform(MockMvcRequestBuilders.get("$URI?page=0&size=10&id=$categoryId"))
             .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch category`() {
+        val name = "Comes e bebes"
+        val entity = super.entitiesGenerator.createCategory(name)
+        val patchedName = "Bebidas irlandesas"
+        val payload = super.getContent("$PAYLOAD_PATH/patch_category")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/${entity.id!!}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").exists())
+            .andExpect(jsonPath("$.name").value(patchedName))
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch category not found`() {
+        val inexistentId: Long = 321321
+        val payload = super.getContent("$PAYLOAD_PATH/patch_category")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/$inexistentId").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch category with incorrect parameters`() {
+        val inexistentId: Long = 321321
+        val payload = super.getContent("$PAYLOAD_PATH/patch_category_invalid_parameters")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/$inexistentId").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }

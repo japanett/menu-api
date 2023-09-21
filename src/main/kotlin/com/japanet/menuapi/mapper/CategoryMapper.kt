@@ -31,7 +31,6 @@ interface CategoryMapper {
     @Mapping(source = "menuId", target = "menu.id")
     fun toEntity(request: CategoryRequest): CategoryEntity
 
-
     fun toResponse(dto: CategoryDTO): CategoryResponse
 
     @Mapping(source = "menu.id", target = "menuId")

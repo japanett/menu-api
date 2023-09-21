@@ -1,6 +1,7 @@
 package com.japanet.menuapi.service
 
 import com.japanet.menuapi.controller.request.v1.CategoryRequest
+import com.japanet.menuapi.controller.request.v1.PatchCategoryRequest
 import com.japanet.menuapi.dto.CategoryDTO
 import com.japanet.menuapi.entity.CategoryEntity
 import com.japanet.menuapi.exception.CategoryNotFoundException
@@ -32,6 +33,22 @@ class CategoryService(
         val pagedResult = repository.findAll(example, pageable)
 
         return if (pagedResult.content.isNotEmpty()) pagedResult
-            else throw CategoryNotFoundException("Category not found with parameters: $request")
+        else throw CategoryNotFoundException("Category not found with parameters: $request")
     }
+
+    @Logging
+    fun patch(request: PatchCategoryRequest, id: Long): CategoryDTO = run {
+        val entity = repository.findById(id)
+            .orElseThrow { CategoryNotFoundException("Category not found with id: $id") }
+
+        request.changes.forEach { entry ->
+            run {
+                when (entry.key) {
+                    "name" -> entity.name = entry.value.toString()
+                }
+            }
+        }
+        mapper.toDTO(repository.save(entity))
+    }
+
 }

@@ -2,6 +2,7 @@ package com.japanet.menuapi.controller.v1
 
 import com.japanet.menuapi.controller.request.v1.CategoryRequest
 import com.japanet.menuapi.controller.request.v1.CreateCategoryRequest
+import com.japanet.menuapi.controller.request.v1.PatchCategoryRequest
 import com.japanet.menuapi.controller.response.v1.CategoryResponse
 import com.japanet.menuapi.mapper.CategoryMapper
 import com.japanet.menuapi.service.CategoryService
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.OK
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -39,4 +41,13 @@ class CategoryController(
     ): Page<CategoryResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
+    @Logging
+    @PatchMapping(value = ["/{id}"])
+    @ResponseStatus(OK)
+    @ApiOperation("Atualiza categoria pelos parametros informados")
+    fun patch(
+        @RequestBody @Valid request: PatchCategoryRequest,
+        @PathVariable id: Long
+    ): CategoryResponse = service.patch(request, id)
+        .let { mapper.toResponse(it) }
 }

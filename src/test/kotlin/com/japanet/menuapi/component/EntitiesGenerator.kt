@@ -44,4 +44,13 @@ class EntitiesGenerator {
                     menu = it
                 ))
         }
+
+    fun createCategory(name: String): CategoryEntity = createEmptyMenu()
+        .run {
+            categoryRepository.save(
+                CategoryEntity(
+                    name = name,
+                    menu = this
+                ))
+        }
 }
