@@ -50,4 +50,12 @@ class CategoryController(
         @PathVariable id: Long
     ): CategoryResponse = service.patch(request, id)
         .let { mapper.toResponse(it) }
+
+    @Logging
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = ["/{id}"])
+    @ApiOperation("Remove categoria pelos parametros informados")
+    fun delete(
+        @PathVariable id: Long
+    ) = service.delete(id)
 }

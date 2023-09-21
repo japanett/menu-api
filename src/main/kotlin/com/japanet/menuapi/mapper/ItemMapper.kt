@@ -1,6 +1,7 @@
 package com.japanet.menuapi.mapper
 
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
+import com.japanet.menuapi.controller.request.v1.ItemRequest
 import com.japanet.menuapi.controller.response.v1.ItemResponse
 import com.japanet.menuapi.dto.ItemDTO
 import com.japanet.menuapi.entity.CategoryEntity
@@ -35,6 +36,14 @@ interface ItemMapper {
     )
     fun toEntity(dto: ItemDTO, menu: MenuEntity, category: CategoryEntity): ItemEntity
 
+    @Mappings(
+        Mapping(source = "menuId", target = "menu.id")
+    )
+    fun toEntity(dto: ItemRequest): ItemEntity
+
     @Mapping(source = "categoryName", target = "category")
     fun toResponse(dto: ItemDTO): ItemResponse
+
+    @Mapping(source = "category.name", target = "category")
+    fun toResponse(dto: ItemEntity): ItemResponse
 }

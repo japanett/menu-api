@@ -23,3 +23,13 @@ services:
       - ./src/main/resources/db/migration:/flyway/sql
     depends_on:
       - mysql
+  java:
+    build:
+      dockerfile: ./Dockerfile
+    command: ./gradlew bootRun --continuous
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - '8080:8080'
+

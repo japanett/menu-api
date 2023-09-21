@@ -51,6 +51,11 @@ class CategoryService(
         mapper.toDTO(repository.save(entity))
     }
 
+    @Logging
+    fun delete(id: Long) {
+        val entity = repository.deleteById(id)
+    }
+
     fun retrieveById(id: Long): CategoryEntity = repository.findById(id)
         .orElseThrow { CategoryNotFoundException("Category not found with id: $id") }
 
