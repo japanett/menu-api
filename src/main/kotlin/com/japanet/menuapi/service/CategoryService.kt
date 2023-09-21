@@ -51,4 +51,7 @@ class CategoryService(
         mapper.toDTO(repository.save(entity))
     }
 
+    fun retrieveById(id: Long): CategoryEntity = repository.findById(id)
+        .orElseThrow { CategoryNotFoundException("Category not found with id: $id") }
+
 }

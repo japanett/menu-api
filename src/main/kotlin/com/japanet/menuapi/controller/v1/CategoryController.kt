@@ -42,8 +42,8 @@ class CategoryController(
         .map { mapper.toResponse(it) }
 
     @Logging
-    @PatchMapping(value = ["/{id}"])
     @ResponseStatus(OK)
+    @PatchMapping(value = ["/{id}"])
     @ApiOperation("Atualiza categoria pelos parametros informados")
     fun patch(
         @RequestBody @Valid request: PatchCategoryRequest,

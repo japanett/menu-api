@@ -45,11 +45,11 @@ class EntitiesGenerator {
                 ))
         }
 
-    fun createCategory(name: String): CategoryEntity = createEmptyMenu()
+    fun createCategory(name: String? = null): CategoryEntity = createEmptyMenu()
         .run {
             categoryRepository.save(
                 CategoryEntity(
-                    name = name,
+                    name = name ?: "Category number: ${Random.nextLong(50)}",
                     menu = this
                 ))
         }

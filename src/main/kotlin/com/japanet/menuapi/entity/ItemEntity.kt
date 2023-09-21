@@ -2,8 +2,10 @@ package com.japanet.menuapi.entity
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
+import javax.validation.constraints.Digits
 
 @Entity
 @Table(name = "item")
@@ -28,8 +30,9 @@ class ItemEntity(
     @Column(name = "des_description", nullable = true, updatable = true)
     var description: String?,
 
-    @Column(name = "des_price", nullable = false, updatable = true)
-    var price: Long?,
+    @Digits(integer = 9, fraction = 2)
+    @Column(name = "des_price", precision = 9, scale = 2, nullable = false, updatable = true)
+    var price: BigDecimal?,
 
     @UpdateTimestamp
     @Column(name = "dat_update", nullable = true, updatable = true)

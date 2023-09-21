@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS menuapi.item
     idt_category    BIGINT UNSIGNED NOT NULL COMMENT 'FK da tabela category',
     des_name        VARCHAR(100)    NOT NULL COMMENT 'Nome do item',
     des_description VARCHAR(255)    NULL     COMMENT 'Descricao do item',
-    des_price       BIGINT          NOT NULL COMMENT 'Preco do produto',
+    des_price       DECIMAL(9,2)    NOT NULL COMMENT 'Preco do produto',
     dat_update      TIMESTAMP       NULL     DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Data de atualizacao do registro',
     dat_creation    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data de criacao do registro',
 
