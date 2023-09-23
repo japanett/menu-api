@@ -113,5 +113,22 @@ class CategoryControllerTest : AbstractTest() {
             .andDo(print())
     }
 
+    @Test
+    fun `delete an existing category`() {
+        val entity = super.entitiesGenerator.createCategory("Comes e bebes")
 
+        super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/${entity.id!!}"))
+            .andExpect(status().isNoContent)
+            .andDo(print())
+    }
+
+    @Test
+    fun `delete an inexistent category`() {
+        val inexistentId: Long = 321321
+
+        super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/$inexistentId"))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
 }

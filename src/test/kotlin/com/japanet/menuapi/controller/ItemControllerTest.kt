@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.context.annotation.DependsOn
 import java.math.BigDecimal
 
 class ItemControllerTest : AbstractTest() {
@@ -63,6 +64,25 @@ class ItemControllerTest : AbstractTest() {
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
 
+    }
+
+    @Test
+    fun `retrieve items by menuId`() {
+        val item = super.entitiesGenerator.createItem()
+
+        super.mockMvc.perform(MockMvcRequestBuilders.get("$URI?page=0&size=10&menuId=${item.menu.id}"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content.length()").value(1))
+            .andExpect(jsonPath("$.content[0].id").exists())
+            .andExpect(jsonPath("$.content[0].menuId").value(item.menu.id))
+            .andExpect(jsonPath("$.content[0].categoryId").value(item.category!!.id))
+            .andExpect(jsonPath("$.content[0].category").value(item.category!!.name))
+            .andExpect(jsonPath("$.content[0].name").value(item.name))
+            .andExpect(jsonPath("$.content[0].description").value(item.description))
+            .andExpect(jsonPath("$.content[0].price").value(item.price))
+            .andExpect(jsonPath("$.content[0].datUpdate").exists())
+            .andExpect(jsonPath("$.content[0].datCreation").exists())
+            .andDo(print())
     }
 
 }

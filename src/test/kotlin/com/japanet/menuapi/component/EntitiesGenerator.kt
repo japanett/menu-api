@@ -2,12 +2,15 @@ package com.japanet.menuapi.component
 
 import com.japanet.menuapi.entity.CategoryEntity
 import com.japanet.menuapi.entity.MenuEntity
+import com.japanet.menuapi.entity.ItemEntity
 import com.japanet.menuapi.repository.CategoryRepository
+import com.japanet.menuapi.repository.ItemRepository
 import com.japanet.menuapi.repository.MenuRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.random.Random
+import java.math.BigDecimal
 
 @Service
 class EntitiesGenerator {
@@ -17,6 +20,9 @@ class EntitiesGenerator {
 
     @Autowired
     private lateinit var categoryRepository: CategoryRepository
+
+    @Autowired
+    private lateinit var itemRepository: ItemRepository
 
     fun createEmptyMenu(customerId: UUID? = null): MenuEntity = menuRepository.save(
         MenuEntity(
@@ -51,6 +57,18 @@ class EntitiesGenerator {
                 CategoryEntity(
                     name = name ?: "Category number: ${Random.nextLong(50)}",
                     menu = this
+                ))
+        }
+
+    fun createItem(): ItemEntity = createCategory()
+        .run {
+            itemRepository.save(
+                ItemEntity(
+                    name = "Item number: ${Random.nextLong(50)}",
+                    description = "Description number: ${Random.nextLong(50)}",
+                    price = BigDecimal("50.0"),
+                    category = this,
+                    menu = this.menu!!
                 ))
         }
 }

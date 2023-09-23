@@ -39,11 +39,15 @@ interface ItemMapper {
     @Mappings(
         Mapping(source = "menuId", target = "menu.id")
     )
-    fun toEntity(dto: ItemRequest): ItemEntity
+    fun toEntity(request: ItemRequest): ItemEntity
 
     @Mapping(source = "categoryName", target = "category")
     fun toResponse(dto: ItemDTO): ItemResponse
 
-    @Mapping(source = "category.name", target = "category")
-    fun toResponse(dto: ItemEntity): ItemResponse
+    @Mappings(
+        Mapping(source = "entity.menu.id", target = "menuId"),
+        Mapping(source = "entity.category.id", target = "categoryId"),
+        Mapping(source = "entity.category.name", target = "category")
+    )
+    fun toResponse(entity: ItemEntity): ItemResponse
 }
