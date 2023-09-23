@@ -6,24 +6,19 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.Digits
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 @Entity
-@Table(name = "item")
-class ItemEntity(
+@Table(name = "additional_item")
+class AdditionalItemEntity(
 
     @Id
-    @Column(name = "idt_item")
+    @Column(name = "idt_additional_item")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idt_menu")
     var menu: MenuEntity,
-
-    @OneToOne(cascade = [CascadeType.PERSIST], fetch = FetchType.LAZY)
-    @JoinColumn(name = "idt_category", nullable = false, updatable = true)
-    var category: CategoryEntity?,
 
     @Column(name = "des_name", nullable = false, updatable = true)
     var name: String?,
@@ -44,6 +39,5 @@ class ItemEntity(
     var datCreation: LocalDateTime? = LocalDateTime.now(),
 
     @ManyToMany
-    @JsonIgnoreProperties("items")
-    var additionals: MutableList<AdditionalItemEntity>? = null
+    var items: MutableList<ItemEntity>? = null
 )

@@ -53,7 +53,7 @@ class CategoryService(
 
     @Logging
     fun delete(id: Long) {
-        val entity = repository.deleteById(id)
+        repository.deleteById(id)
     }
 
     fun retrieveById(id: Long): CategoryEntity = repository.findById(id)
