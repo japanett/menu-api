@@ -1,8 +1,6 @@
 package com.japanet.menuapi.controller.advice
 
-import com.japanet.menuapi.exception.CategoryNotFoundException
-import com.japanet.menuapi.exception.DuplicateEstablishmentException
-import com.japanet.menuapi.exception.MenuNotFoundException
+import com.japanet.menuapi.exception.*
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
@@ -53,7 +51,9 @@ class MenuapiAdvice(
 
     @ExceptionHandler(value = [
         MenuNotFoundException::class,
-        CategoryNotFoundException::class
+        CategoryNotFoundException::class,
+        ItemNotFoundException::class,
+        AdditionalItemNotFoundException::class
     ])
     fun handleNotFoundException(ex: Exception): ResponseEntity<ErrorResponseWrapper> {
         log.error { "C=${this::class.simpleName}, M=${this::handleNotFoundException.name}, e=${ex}" }

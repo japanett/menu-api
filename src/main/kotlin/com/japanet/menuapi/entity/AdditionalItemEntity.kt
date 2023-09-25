@@ -1,5 +1,6 @@
 package com.japanet.menuapi.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
@@ -16,12 +17,14 @@ class AdditionalItemEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = 0,
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idt_menu")
     var menu: MenuEntity,
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "additionalItems", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    var items: MutableList<ItemEntity>?,
+    var items: MutableList<ItemEntity>? = null,
 
     @Column(name = "des_name", nullable = false, updatable = true)
     var name: String?,

@@ -56,16 +56,15 @@ class EntitiesGenerator {
                 ))
         }
 
-    fun createCategory(name: String? = null): CategoryEntity = createEmptyMenu()
-        .run {
+    fun createCategory(name: String? = null, menu: MenuEntity? = null): CategoryEntity = run {
             categoryRepository.save(
                 CategoryEntity(
                     name = name ?: "Category number: ${Random.nextLong(50)}",
-                    menu = this
+                    menu = menu ?: createEmptyMenu()
                 ))
         }
 
-    fun createItem(): ItemEntity = createCategory()
+    fun createItem(menu: MenuEntity? = null): ItemEntity = createCategory(menu = menu)
         .run {
             itemRepository.save(
                 ItemEntity(
@@ -77,16 +76,14 @@ class EntitiesGenerator {
                 ))
         }
 
-    fun createAdditionalItem(): AdditionalItemEntity = createEmptyMenu()
-        .run {
-            additionalItemRepository.save(
-                AdditionalItemEntity(
-                    menu = this,
-                    items = null,
-                    name = "Additional item ${Random.nextLong(50)}",
-                    description = "Description ${Random.nextLong(50)}",
-                    price = BigDecimal("1.99")
-                )
+    fun createAdditionalItem(menu: MenuEntity? = null): AdditionalItemEntity =
+        additionalItemRepository.save(
+            AdditionalItemEntity(
+                menu = menu?: createEmptyMenu(),
+                name = "Additional item ${Random.nextLong(50)}",
+                description = "Description ${Random.nextLong(50)}",
+                price = BigDecimal("1.99")
             )
-        }
+        )
 }
+

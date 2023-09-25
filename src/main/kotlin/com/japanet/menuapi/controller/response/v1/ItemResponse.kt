@@ -1,6 +1,7 @@
 package com.japanet.menuapi.controller.response.v1
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.japanet.menuapi.entity.AdditionalItemEntity
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -19,6 +20,8 @@ data class ItemResponse(
     val description: String?,
 
     val price: BigDecimal?,
+
+    val additionalItems: MutableList<AdditionalItemEntity>?,
 
     val datUpdate: LocalDateTime?,
 

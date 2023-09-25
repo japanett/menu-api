@@ -1,5 +1,6 @@
 package com.japanet.menuapi.controller.v1
 
+import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
 import com.japanet.menuapi.controller.request.v1.ItemRequest
 import com.japanet.menuapi.controller.response.v1.ItemResponse
@@ -41,4 +42,13 @@ class ItemController(
     ): Page<ItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
+    @Logging
+    @ResponseStatus(CREATED)
+    @PostMapping(value = ["/{id}/additional-item"])
+    @ApiOperation("Atribui um novo adicional para um item")
+    fun assignAdditionalItem(
+        @PathVariable id: Long,
+        @RequestBody @Valid request: AssignAdditionalItemRequest
+    ): ItemResponse = service.assignAdditionalItem(id, request)
+        .let { mapper.toResponse(it) }
 }

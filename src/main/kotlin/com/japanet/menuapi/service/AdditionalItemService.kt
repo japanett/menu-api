@@ -33,4 +33,7 @@ class AdditionalItemService(
         return if (pagedResult.content.isNotEmpty()) pagedResult
         else throw AdditionalItemNotFoundException("AdditionalItem not found with parameters: $request")
     }
+
+    fun retrieveByIdAndMenuId(id: Long, menuId: Long) = repository.findByIdAndMenuId(id, menuId)
+        .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id") }
 }

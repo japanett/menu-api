@@ -26,13 +26,14 @@ interface ItemMapper {
 
     @Mappings(
         Mapping(target = "id", ignore = true),
+        Mapping(target = "datUpdate", ignore = true),
+        Mapping(target = "datCreation", ignore = true),
+        Mapping(target = "additionalItems", ignore = true),
         Mapping(source = "menu", target = "menu"),
         Mapping(source = "category", target = "category"),
         Mapping(source = "dto.name", target = "name"),
         Mapping(source = "dto.description", target = "description"),
-        Mapping(source = "dto.price", target = "price"),
-        Mapping(target = "datUpdate", ignore = true),
-        Mapping(target = "datCreation", ignore = true)
+        Mapping(source = "dto.price", target = "price")
     )
     fun toEntity(dto: ItemDTO, menu: MenuEntity, category: CategoryEntity): ItemEntity
 
