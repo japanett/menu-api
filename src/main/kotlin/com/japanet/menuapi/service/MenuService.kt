@@ -36,7 +36,7 @@ class MenuService(
         val pagedResult = repository.findAll(example, pageable)
 
         return if (pagedResult.content.isNotEmpty()) pagedResult
-            else throw MenuNotFoundException("Menu not found with parameters: $request")
+        else throw MenuNotFoundException("Menu not found with parameters: $request")
     }
 
     fun retrieveById(menuId: Long): MenuEntity = repository.findById(menuId)

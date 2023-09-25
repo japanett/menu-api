@@ -21,9 +21,9 @@ class AdditionalItemService(
 
     @Logging
     fun create(dto: AdditionalItemDTO): AdditionalItemDTO = dto
-            .run { mapper.toEntity(this, menuService.retrieveById(this.menuId!!)) }
-            .run { repository.save(this) }
-            .let { mapper.toDTO(it) }
+        .run { mapper.toEntity(this, menuService.retrieveById(this.menuId!!)) }
+        .run { repository.save(this) }
+        .let { mapper.toDTO(it) }
 
     @Logging
     fun retrieveByFilter(request: AdditionalItemRequest, pageable: Pageable): Page<AdditionalItemEntity> {
@@ -35,5 +35,5 @@ class AdditionalItemService(
     }
 
     fun retrieveByIdAndMenuId(id: Long, menuId: Long) = repository.findByIdAndMenuId(id, menuId)
-        .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id") }
+        .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id and menuId: $menuId") }
 }

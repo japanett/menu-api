@@ -14,6 +14,7 @@ class AdditionalItemControllerTest : AbstractTest() {
 
     companion object {
         private const val URI = "/additional-items"
+        private const val PAYLOAD_PATH = "additional-items"
     }
 
     @Test
@@ -61,6 +62,16 @@ class AdditionalItemControllerTest : AbstractTest() {
     }
 
     @Test
+    fun `create additional item with invalid request`() {
+        val payload = super.getContent("$PAYLOAD_PATH/create_additional_item_invalid_request")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
     fun `retrieve additional items by menuId`() {
         val additionalItem = super.entitiesGenerator.createAdditionalItem()
 
@@ -74,6 +85,14 @@ class AdditionalItemControllerTest : AbstractTest() {
             .andExpect(jsonPath("$.content[0].price").value(additionalItem.price))
             .andExpect(jsonPath("$.content[0].datUpdate").exists())
             .andExpect(jsonPath("$.content[0].datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `retrieve additional item not found`() {
+        super.mockMvc.perform(MockMvcRequestBuilders.get("$URI?page=0&size=10&id=${321}"))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
 

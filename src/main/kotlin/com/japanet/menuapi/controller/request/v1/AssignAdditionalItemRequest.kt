@@ -1,12 +1,12 @@
 package com.japanet.menuapi.controller.request.v1
 
-import javax.validation.constraints.NotNull
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AssignAdditionalItemRequest(
 
-    @field:NotNull
-    val id: Long,
+    @JsonProperty(required = true)
+    val additionalItemId: Long,
 
-    @field:NotNull
+    @JsonProperty(required = true)
     val menuId: Long
 )

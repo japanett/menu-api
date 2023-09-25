@@ -45,9 +45,9 @@ class ItemService(
     @Logging
     fun assignAdditionalItem(id: Long, request: AssignAdditionalItemRequest): ItemDTO = run {
         val item = repository.findByIdAndMenuId(id, request.menuId)
-            .orElseThrow{ ItemNotFoundException("Item not found with id: $id") }
+            .orElseThrow{ ItemNotFoundException("Item not found with id: $id and menuId: ${request.menuId}") }
 
-        val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.id, request.menuId)
+        val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.additionalItemId, request.menuId)
 
         item.additionalItems?.add(additionalItem)
 

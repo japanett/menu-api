@@ -49,6 +49,16 @@ class CategoryControllerTest : AbstractTest() {
     }
 
     @Test
+    fun `create category with invalid request`() {
+        val payload = super.getContent("$PAYLOAD_PATH/create_category_invalid_request")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.post(URI).contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
     fun `retrieve categories by menuId`() {
         val menuEntity = super.entitiesGenerator.createThreeCategories("Category")
         val menudId: Long = menuEntity.id!!

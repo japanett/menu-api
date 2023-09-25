@@ -16,6 +16,7 @@ class ItemControllerTest : AbstractTest() {
 
     companion object {
         private const val URI = "/items"
+        private const val PAYLOAD_PATH = "items"
     }
 
     @Test
@@ -68,6 +69,49 @@ class ItemControllerTest : AbstractTest() {
     }
 
     @Test
+    fun `create item with nonexistent menu`() {
+        val payload = super.mapper.writeValueAsBytes(CreateItemRequest(
+            menuId = 321,
+            categoryId = 1232,
+            name = "Bla",
+            description = null,
+            price = BigDecimal(10)
+        ))
+
+        super.mockMvc.perform(post(URI).contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `create item with nonexistent category`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val payload = super.mapper.writeValueAsBytes(CreateItemRequest(
+            menuId = menu.id!!,
+            categoryId = 1232,
+            name = "Bla",
+            description = null,
+            price = BigDecimal(10)
+        ))
+
+        super.mockMvc.perform(post(URI).contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `create item with invalid request`() {
+        val payload = super.getContent("$PAYLOAD_PATH/create_item_invalid_request")
+
+        super.mockMvc.perform(post(URI).contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
     fun `retrieve items by menuId`() {
         val item = super.entitiesGenerator.createItem()
 
@@ -87,12 +131,20 @@ class ItemControllerTest : AbstractTest() {
     }
 
     @Test
+    fun `retrieve items by id not found`() {
+        super.mockMvc.perform(get("$URI?page=0&size=10&id=${321}"))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
     fun `assign additional item to item`() {
         val item = super.entitiesGenerator.createItem()
         val additionalItem = super.entitiesGenerator.createAdditionalItem(item.menu)
 
         val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
-            id = additionalItem.id!!,
+            additionalItemId = additionalItem.id!!,
             menuId = item.menu.id!!
         ))
 
@@ -117,4 +169,41 @@ class ItemControllerTest : AbstractTest() {
             .andDo(print())
     }
 
+    @Test
+    fun `assign additional item with nonexistent item`() {
+        val item = super.entitiesGenerator.createItem()
+        val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
+            additionalItemId = 321,
+            menuId = 321
+        ))
+
+        super.mockMvc.perform(post("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `assign additional item with nonexistent additional item`() {
+        val item = super.entitiesGenerator.createItem()
+        val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
+            additionalItemId = 312,
+            menuId = item.menu.id!!
+        ))
+
+        super.mockMvc.perform(post("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `assign additional item with invalid request`() {
+        val payload = super.getContent("$PAYLOAD_PATH/assign_additional_items_invalid_request")
+
+        super.mockMvc.perform(post("$URI/32/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
 }

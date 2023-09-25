@@ -1,5 +1,6 @@
 package com.japanet.menuapi.controller.request.v1
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import javax.validation.constraints.Digits
 import javax.validation.constraints.NotBlank
@@ -7,7 +8,7 @@ import javax.validation.constraints.NotNull
 
 data class CreateAdditionalItemRequest(
 
-    @field:NotNull
+    @JsonProperty(required = true)
     val menuId: Long,
 
     @field:NotNull

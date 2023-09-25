@@ -22,11 +22,10 @@ class CategoryService(
 ) {
 
     @Logging
-    fun create(dto: CategoryDTO): CategoryDTO {
+    fun create(dto: CategoryDTO): CategoryDTO = run {
         val menu = menuService.retrieveById(dto.menuId!!)
-        val entity = repository.save(mapper.toEntity(dto, menu))
-        return mapper.toDTO(entity)
-    }
+        repository.save(mapper.toEntity(dto, menu))
+    }.let { mapper.toDTO(it) }
 
     @Logging
     fun retrieveByFilter(request: CategoryRequest, pageable: Pageable): Page<CategoryEntity> {
@@ -49,8 +48,8 @@ class CategoryService(
                 }
             }
         }
-        mapper.toDTO(repository.save(entity))
-    }
+        repository.save(entity)
+    }.let { mapper.toDTO(it) }
 
     @Logging
     fun delete(id: Long) = runCatching {

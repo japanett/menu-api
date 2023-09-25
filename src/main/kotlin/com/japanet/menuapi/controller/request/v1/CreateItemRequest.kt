@@ -1,22 +1,21 @@
 package com.japanet.menuapi.controller.request.v1
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import javax.validation.constraints.Digits
-import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class CreateItemRequest(
 
-    @field:NotNull
+    @JsonProperty(required = true)
     val menuId: Long,
 
-    @field:NotNull
+    @JsonProperty(required = true)
     val categoryId: Long,
 
     @field:NotNull
     val name: String,
 
-    @field:NotBlank
     val description: String?,
 
     @field:NotNull
