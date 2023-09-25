@@ -27,13 +27,8 @@ class MenuEntity(
     @OneToMany(mappedBy = "menu", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     var categories: MutableList<CategoryEntity>?,
 
-    /*
-
-      LISTA DE PROMOTIONS ?
-
-      LISTA DE ADDITIONAL ITEMS ?
-
-     */
+    @OneToMany(mappedBy = "menu", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var additionalItems: MutableList<AdditionalItemEntity>? = null,
 
     @UpdateTimestamp
     @Column(name = "dat_update", nullable = true, updatable = true)

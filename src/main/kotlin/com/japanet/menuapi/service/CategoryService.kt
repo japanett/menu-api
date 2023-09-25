@@ -8,6 +8,7 @@ import com.japanet.menuapi.exception.CategoryNotFoundException
 import com.japanet.menuapi.mapper.CategoryMapper
 import com.japanet.menuapi.repository.CategoryRepository
 import com.japanet.menuapi.utils.log.Logging
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Service
 class CategoryService(
     private val mapper: CategoryMapper,
     private val menuService: MenuService,
-    private val repository: CategoryRepository,
+    private val repository: CategoryRepository
 ) {
 
     @Logging
@@ -52,8 +53,11 @@ class CategoryService(
     }
 
     @Logging
-    fun delete(id: Long) {
+    fun delete(id: Long) = runCatching {
         repository.deleteById(id)
+    }.onFailure {
+        if (it is EmptyResultDataAccessException) throw CategoryNotFoundException("Category not found with id: $id")
+        else throw it
     }
 
     fun retrieveById(id: Long): CategoryEntity = repository.findById(id)

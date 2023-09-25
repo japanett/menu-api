@@ -1,16 +1,16 @@
 package com.japanet.menuapi.component
 
 import com.japanet.menuapi.entity.CategoryEntity
-import com.japanet.menuapi.entity.MenuEntity
 import com.japanet.menuapi.entity.ItemEntity
+import com.japanet.menuapi.entity.MenuEntity
 import com.japanet.menuapi.repository.CategoryRepository
 import com.japanet.menuapi.repository.ItemRepository
 import com.japanet.menuapi.repository.MenuRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.util.*
 import kotlin.random.Random
-import java.math.BigDecimal
 
 @Service
 class EntitiesGenerator {

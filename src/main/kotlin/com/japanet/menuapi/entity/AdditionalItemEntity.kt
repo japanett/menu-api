@@ -20,6 +20,9 @@ class AdditionalItemEntity(
     @JoinColumn(name = "idt_menu")
     var menu: MenuEntity,
 
+    @ManyToMany(mappedBy = "additionalItems", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    var items: MutableList<ItemEntity>?,
+
     @Column(name = "des_name", nullable = false, updatable = true)
     var name: String?,
 
@@ -36,8 +39,6 @@ class AdditionalItemEntity(
 
     @CreationTimestamp
     @Column(name = "dat_creation", nullable = false, updatable = false)
-    var datCreation: LocalDateTime? = LocalDateTime.now(),
+    var datCreation: LocalDateTime? = LocalDateTime.now()
 
-    @ManyToMany
-    var items: MutableList<ItemEntity>? = null
 )

@@ -54,7 +54,7 @@ class CategoryController(
     @Logging
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = ["/{id}"])
-    @ApiOperation("Remove categoria pelos parametros informados")
+    @ApiOperation("Remove categoria")
     fun delete(
         @PathVariable id: Long
     ) = service.delete(id)
