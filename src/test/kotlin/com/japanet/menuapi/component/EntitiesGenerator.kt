@@ -1,8 +1,10 @@
 package com.japanet.menuapi.component
 
+import com.japanet.menuapi.entity.AdditionalItemEntity
 import com.japanet.menuapi.entity.CategoryEntity
 import com.japanet.menuapi.entity.ItemEntity
 import com.japanet.menuapi.entity.MenuEntity
+import com.japanet.menuapi.repository.AdditionalItemRepository
 import com.japanet.menuapi.repository.CategoryRepository
 import com.japanet.menuapi.repository.ItemRepository
 import com.japanet.menuapi.repository.MenuRepository
@@ -23,6 +25,9 @@ class EntitiesGenerator {
 
     @Autowired
     private lateinit var itemRepository: ItemRepository
+
+    @Autowired
+    private lateinit var additionalItemRepository: AdditionalItemRepository
 
     fun createEmptyMenu(customerId: UUID? = null): MenuEntity = menuRepository.save(
         MenuEntity(
@@ -70,5 +75,18 @@ class EntitiesGenerator {
                     category = this,
                     menu = this.menu!!
                 ))
+        }
+
+    fun createAdditionalItem(): AdditionalItemEntity = createEmptyMenu()
+        .run {
+            additionalItemRepository.save(
+                AdditionalItemEntity(
+                    menu = this,
+                    items = null,
+                    name = "Additional item ${Random.nextLong(50)}",
+                    description = "Description ${Random.nextLong(50)}",
+                    price = BigDecimal("1.99")
+                )
+            )
         }
 }

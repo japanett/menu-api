@@ -11,8 +11,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.OK
+import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -25,7 +24,7 @@ class CategoryController(
 
     @Logging
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     @ApiOperation("Cria uma nova categoria")
     fun create(@RequestBody @Valid request: CreateCategoryRequest): CategoryResponse = request
         .let { mapper.toDTO(it) }
@@ -52,10 +51,8 @@ class CategoryController(
         .let { mapper.toResponse(it) }
 
     @Logging
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(NO_CONTENT)
     @DeleteMapping(value = ["/{id}"])
     @ApiOperation("Remove categoria")
-    fun delete(
-        @PathVariable id: Long
-    ) = service.delete(id)
+    fun delete(@PathVariable id: Long) = service.delete(id)
 }

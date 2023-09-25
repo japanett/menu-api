@@ -40,4 +40,5 @@ class ItemController(
         @PageableDefault pageable: Pageable
     ): Page<ItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
+
 }
