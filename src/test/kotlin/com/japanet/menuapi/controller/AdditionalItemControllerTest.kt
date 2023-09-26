@@ -107,6 +107,51 @@ class AdditionalItemControllerTest : AbstractTest() {
     }
 
     @Test
+    fun `patch additional item`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+        val payload = super.getContent("$PAYLOAD_PATH/patch_additional_item")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/${additionalItem.id}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").exists())
+            .andExpect(jsonPath("$.name").value("Ketchup"))
+            .andExpect(jsonPath("$.description").value("Heinz braba"))
+            .andExpect(jsonPath("$.price").value(10.55))
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch additional item description only`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+        val payload = super.getContent("$PAYLOAD_PATH/patch_additional_item_description")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/${additionalItem.id}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").exists())
+            .andExpect(jsonPath("$.name").exists())
+            .andExpect(jsonPath("$.description").value("mostardao"))
+            .andExpect(jsonPath("$.price").exists())
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch additional item with invalid price`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+        val payload = super.getContent("$PAYLOAD_PATH/patch_invalid_price")
+
+        super.mockMvc.perform(MockMvcRequestBuilders.patch("$URI/${additionalItem.id}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
     fun `delete additional item`() {
         val additionalItem = super.entitiesGenerator.createAdditionalItem()
 

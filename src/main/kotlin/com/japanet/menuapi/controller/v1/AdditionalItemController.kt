@@ -2,6 +2,7 @@ package com.japanet.menuapi.controller.v1
 
 import com.japanet.menuapi.controller.request.v1.AdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.CreateAdditionalItemRequest
+import com.japanet.menuapi.controller.request.v1.PatchAdditionalItemRequest
 import com.japanet.menuapi.controller.response.v1.AdditionalItemResponse
 import com.japanet.menuapi.mapper.AdditionalItemMapper
 import com.japanet.menuapi.service.AdditionalItemService
@@ -10,8 +11,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus.CREATED
-import org.springframework.http.HttpStatus.NO_CONTENT
+import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -42,9 +42,15 @@ class AdditionalItemController(
     ): Page<AdditionalItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
-    /*
-        TODO PATCH additional item
-    */
+    @Logging
+    @ResponseStatus(OK)
+    @PatchMapping(value = ["/{id}"])
+    @ApiOperation("Atualiza additional item")
+    fun patch(
+        @RequestBody @Valid request: PatchAdditionalItemRequest,
+        @PathVariable id: Long
+    ): AdditionalItemResponse = service.patch(request, id)
+        .let { mapper.toResponse(it) }
 
     @Logging
     @ResponseStatus(NO_CONTENT)

@@ -73,7 +73,8 @@ class MenuapiAdvice(
     }
 
     @ExceptionHandler(value = [
-        IllegalArgumentException::class
+        IllegalArgumentException::class,
+        InvalidPriceException::class
     ])
     fun handleIllegalArgumentException(ex: Exception): ResponseEntity<ErrorResponseWrapper> {
         log.error { "C=${this::class.simpleName}, M=${this::handleIllegalArgumentException.name}, e=${ex}" }
