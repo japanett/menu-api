@@ -6,6 +6,9 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
+import javax.persistence.CascadeType.*
+import javax.persistence.FetchType.LAZY
+import javax.persistence.GenerationType.IDENTITY
 import javax.validation.constraints.Digits
 
 @Entity
@@ -14,16 +17,16 @@ class AdditionalItemEntity(
 
     @Id
     @Column(name = "idt_additional_item")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     var id: Long? = 0,
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "idt_menu")
     var menu: MenuEntity,
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "additionalItems", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToMany(mappedBy = "additionalItems", fetch = LAZY, cascade = [PERSIST, MERGE, REFRESH])
     var items: MutableList<ItemEntity>? = null,
 
     @Column(name = "des_name", nullable = false, updatable = true)

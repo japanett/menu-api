@@ -5,6 +5,7 @@ import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
 import org.junit.Test
 import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -16,6 +17,7 @@ class ItemControllerTest : AbstractTest() {
 
     companion object {
         private const val URI = "/items"
+        private const val MOCK_PATH = "/sql/controller/items"
         private const val PAYLOAD_PATH = "items"
     }
 
@@ -166,6 +168,23 @@ class ItemControllerTest : AbstractTest() {
             .andExpect(jsonPath("$.additionalItems[0].datCreation").exists())
             .andExpect(jsonPath("$.datUpdate").exists())
             .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    @Sql("$MOCK_PATH/create_item_add_item_constraint.sql")
+    fun `already assigned additional item to item`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+        val item = super.entitiesGenerator.createItem(additionalItem.menu, mutableListOf(additionalItem))
+
+        val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
+            additionalItemId = additionalItem.id!!,
+            menuId = item.menu.id!!
+        ))
+
+        super.mockMvc.perform(post("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isUnprocessableEntity)
+            .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
 

@@ -2,15 +2,25 @@ package com.japanet.menuapi.controller
 
 import com.japanet.menuapi.AbstractTest
 import com.japanet.menuapi.controller.request.v1.CreateAdditionalItemRequest
+import com.japanet.menuapi.repository.AdditionalItemRepository
+import com.japanet.menuapi.repository.ItemRepository
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
+import kotlin.test.assertTrue
 
 class AdditionalItemControllerTest : AbstractTest() {
+
+    @Autowired
+    private lateinit var repository: AdditionalItemRepository
+
+    @Autowired
+    private lateinit var itemRepository: ItemRepository
 
     companion object {
         private const val URI = "/additional-items"
@@ -94,6 +104,31 @@ class AdditionalItemControllerTest : AbstractTest() {
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
+    }
+
+    @Test
+    fun `delete additional item`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+
+        super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/${additionalItem.id}"))
+            .andExpect(status().isNoContent)
+            .andDo(print())
+    }
+
+    @Test
+    fun `delete additional item with items`() {
+        val additionalItem = super.entitiesGenerator.createAdditionalItem()
+        val item = super.entitiesGenerator.createItem(additionalItem.menu, mutableListOf(additionalItem))
+
+        super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/${additionalItem.id}"))
+            .andExpect(status().isNoContent)
+            .andDo(print())
+
+        val itemAfter = itemRepository.findById(item.id!!)
+        val additionalItemAfter = repository.findById(additionalItem.id!!)
+
+        assertTrue { itemAfter.get().additionalItems?.isEmpty()!! }
+        assertTrue { additionalItemAfter.isEmpty }
     }
 
 }

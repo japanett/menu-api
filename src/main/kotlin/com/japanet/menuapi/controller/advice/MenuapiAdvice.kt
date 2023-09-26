@@ -62,7 +62,9 @@ class MenuapiAdvice(
             .body(ErrorResponseWrapper(listOf(ErrorResponse(ex.message))))
     }
 
-    @ExceptionHandler(value = [DuplicateEstablishmentException::class])
+    @ExceptionHandler(value = [
+        DuplicateEstablishmentException::class,
+        AdditionalItemAlreadyAssignedException::class])
     fun handleDuplicatedDataException(ex: Exception): ResponseEntity<ErrorResponseWrapper> {
         log.error { "C=${this::class.simpleName}, M=${this::handleDuplicatedDataException.name}, e=${ex}" }
         return ResponseEntity

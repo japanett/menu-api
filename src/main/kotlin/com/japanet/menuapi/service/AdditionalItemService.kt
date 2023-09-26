@@ -11,6 +11,7 @@ import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AdditionalItemService(
@@ -34,6 +35,18 @@ class AdditionalItemService(
         else throw AdditionalItemNotFoundException("AdditionalItem not found with parameters: $request")
     }
 
-    fun retrieveByIdAndMenuId(id: Long, menuId: Long) = repository.findByIdAndMenuId(id, menuId)
+    @Logging
+    @Transactional
+    fun delete(id: Long) = run {
+        val entity = repository.findById(id)
+            .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id") }
+
+        // Removes the relationship without deleting parent
+        for (item in entity.items!!) { item.additionalItems?.remove(entity) }
+
+        repository.deleteById(id)
+    }
+
+    fun retrieveByIdAndMenuId(id: Long, menuId: Long): AdditionalItemEntity = repository.findByIdAndMenuId(id, menuId)
         .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id and menuId: $menuId") }
 }

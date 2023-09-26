@@ -64,7 +64,7 @@ class EntitiesGenerator {
                 ))
         }
 
-    fun createItem(menu: MenuEntity? = null): ItemEntity = createCategory(menu = menu)
+    fun createItem(menu: MenuEntity? = null, additionalItem: MutableList<AdditionalItemEntity>? = null): ItemEntity = createCategory(menu = menu)
         .run {
             itemRepository.save(
                 ItemEntity(
@@ -72,7 +72,8 @@ class EntitiesGenerator {
                     description = "Description number: ${Random.nextLong(50)}",
                     price = BigDecimal("50.0"),
                     category = this,
-                    menu = this.menu!!
+                    menu = this.menu!!,
+                    additionalItems = additionalItem
                 ))
         }
 
@@ -85,5 +86,6 @@ class EntitiesGenerator {
                 price = BigDecimal("1.99")
             )
         )
+
 }
 

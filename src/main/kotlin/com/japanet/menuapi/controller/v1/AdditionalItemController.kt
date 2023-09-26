@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -40,5 +41,17 @@ class AdditionalItemController(
         @PageableDefault pageable: Pageable
     ): Page<AdditionalItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
+
+    /*
+        TODO PATCH additional item
+    */
+
+    @Logging
+    @ResponseStatus(NO_CONTENT)
+    @DeleteMapping(value = ["/{id}"])
+    @ApiOperation("Remove additional item pelo id")
+    fun delete(@PathVariable id: Long) {
+        service.delete(id)
+    }
 
 }

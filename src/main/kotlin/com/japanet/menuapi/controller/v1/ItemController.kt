@@ -42,6 +42,16 @@ class ItemController(
     ): Page<ItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
+
+    /*
+
+        TODO PATCH item
+
+        TODO DELETE item
+
+     */
+
+
     @Logging
     @ResponseStatus(CREATED)
     @PostMapping(value = ["/{id}/additional-item"])
@@ -51,4 +61,7 @@ class ItemController(
         @RequestBody @Valid request: AssignAdditionalItemRequest
     ): ItemResponse = service.assignAdditionalItem(id, request)
         .let { mapper.toResponse(it) }
+
+
+    // TODO unassignAdditionalItem()
 }
