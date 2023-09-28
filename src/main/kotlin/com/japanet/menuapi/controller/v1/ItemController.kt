@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.OK
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -62,6 +63,13 @@ class ItemController(
     ): ItemResponse = service.assignAdditionalItem(id, request)
         .let { mapper.toResponse(it) }
 
-
-    // TODO unassignAdditionalItem()
+    @Logging
+    @ResponseStatus(OK)
+    @DeleteMapping(value = ["/{id}/additional-item"])
+    @ApiOperation("Atribui um novo adicional para um item")
+    fun unassignAdditionalItem(
+        @PathVariable id: Long,
+        @RequestBody @Valid request: AssignAdditionalItemRequest
+    ): ItemResponse = service.unassignAdditionalItem(id, request)
+        .let { mapper.toResponse(it) }
 }

@@ -5,16 +5,15 @@ import com.japanet.menuapi.controller.request.v1.PatchAdditionalItemRequest
 import com.japanet.menuapi.dto.AdditionalItemDTO
 import com.japanet.menuapi.entity.AdditionalItemEntity
 import com.japanet.menuapi.exception.AdditionalItemNotFoundException
-import com.japanet.menuapi.exception.InvalidPriceException
 import com.japanet.menuapi.mapper.AdditionalItemMapper
 import com.japanet.menuapi.repository.AdditionalItemRepository
+import com.japanet.menuapi.utils.FormatValueUtils.Companion.convertPrice
 import com.japanet.menuapi.utils.log.Logging
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class AdditionalItemService(
@@ -69,12 +68,5 @@ class AdditionalItemService(
 
     fun retrieveByIdAndMenuId(id: Long, menuId: Long): AdditionalItemEntity = repository.findByIdAndMenuId(id, menuId)
         .orElseThrow { AdditionalItemNotFoundException("AdditionalItem not found with id: $id and menuId: $menuId") }
-
-    private fun convertPrice(price: String?): BigDecimal? = price?.let {
-        BigDecimal(price).run {
-            if (this.precision() > 9 || this.scale() > 2) throw InvalidPriceException("Price:[$this] must be of max scale 2 and max precision 9")
-            this
-        }
-    }
 
 }

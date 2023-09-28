@@ -6,8 +6,7 @@ import com.japanet.menuapi.controller.request.v1.CreateItemRequest
 import org.junit.Test
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -222,6 +221,57 @@ class ItemControllerTest : AbstractTest() {
 
         super.mockMvc.perform(post("$URI/32/additional-item").contentType(APPLICATION_JSON).content(payload))
             .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `unassign additional item from item`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val additionalItem = super.entitiesGenerator.createAdditionalItem(menu)
+        val additionalItem2 = super.entitiesGenerator.createAdditionalItem(menu)
+        val item = super.entitiesGenerator.createItem(menu, mutableListOf(additionalItem, additionalItem2))
+
+        val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
+            additionalItemId = additionalItem.id!!,
+            menuId = menu.id!!
+        ))
+
+        super.mockMvc.perform(delete("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").value(menu.id))
+            .andExpect(jsonPath("$.categoryId").value(item.category!!.id))
+            .andExpect(jsonPath("$.category").value(item.category!!.name))
+            .andExpect(jsonPath("$.name").value(item.name))
+            .andExpect(jsonPath("$.description").value(item.description))
+            .andExpect(jsonPath("$.price").value(item.price))
+            .andExpect(jsonPath("$.additionalItems.length()").value(1))
+            .andExpect(jsonPath("$.additionalItems[0].id").value(additionalItem2.id))
+            .andExpect(jsonPath("$.additionalItems[0].name").value(additionalItem2.name))
+            .andExpect(jsonPath("$.additionalItems[0].description").value(additionalItem2.description))
+            .andExpect(jsonPath("$.additionalItems[0].price").value(additionalItem2.price))
+            .andExpect(jsonPath("$.additionalItems[0].datUpdate").exists())
+            .andExpect(jsonPath("$.additionalItems[0].datCreation").exists())
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `unassign nonexistent additional item from item`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val additionalItem = super.entitiesGenerator.createAdditionalItem(menu)
+        val additionalItem2 = super.entitiesGenerator.createAdditionalItem(menu)
+        val item = super.entitiesGenerator.createItem(menu, mutableListOf(additionalItem))
+
+        val payload = super.mapper.writeValueAsBytes(AssignAdditionalItemRequest(
+            additionalItemId = additionalItem2.id!!,
+            menuId = menu.id!!
+        ))
+
+        super.mockMvc.perform(delete("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isUnprocessableEntity)
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }

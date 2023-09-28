@@ -6,6 +6,7 @@ import com.japanet.menuapi.dto.ItemDTO
 import com.japanet.menuapi.entity.ItemEntity
 import com.japanet.menuapi.exception.AdditionalItemAlreadyAssignedException
 import com.japanet.menuapi.exception.ItemNotFoundException
+import com.japanet.menuapi.exception.UnassignAdditionalItemException
 import com.japanet.menuapi.mapper.ItemMapper
 import com.japanet.menuapi.repository.ItemRepository
 import com.japanet.menuapi.utils.log.Logging
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ItemService(
@@ -45,18 +47,32 @@ class ItemService(
     }
 
     @Logging
+    @Transactional
     fun assignAdditionalItem(id: Long, request: AssignAdditionalItemRequest): ItemDTO = runCatching {
-        val item = repository.findByIdAndMenuId(id, request.menuId)
-            .orElseThrow{ ItemNotFoundException("Item not found with id: $id and menuId: ${request.menuId}") }
-
+        val item = retrieveByIdAndMenuId(id, request.menuId)
         val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.additionalItemId, request.menuId)
 
         item.additionalItems?.add(additionalItem)
 
-        mapper.toDTO(repository.save(item))
+        mapper.toDTO(repository.saveAndFlush(item))
     }.onFailure {
         if (it is DataIntegrityViolationException) throw AdditionalItemAlreadyAssignedException("Item with id: $id already has Additional Item with id: ${request.additionalItemId}")
         else throw it
     }.getOrThrow()
 
+    @Logging
+    @Transactional
+    fun unassignAdditionalItem(id: Long, request: AssignAdditionalItemRequest): ItemDTO = run {
+        val item = retrieveByIdAndMenuId(id, request.menuId)
+        val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.additionalItemId, request.menuId)
+
+        if (item.additionalItems?.contains(additionalItem) == false) throw UnassignAdditionalItemException("Item with id: $id does not contain additional item with id: ${request.additionalItemId}")
+
+        item.additionalItems?.remove(additionalItem)
+
+        repository.saveAndFlush(item)
+    }.let { mapper.toDTO(it) }
+
+    private fun retrieveByIdAndMenuId(id: Long, menuId: Long): ItemEntity = repository.findByIdAndMenuId(id, menuId)
+        .orElseThrow { ItemNotFoundException("Item not found with id: $id and menuId: $menuId") }
 }
