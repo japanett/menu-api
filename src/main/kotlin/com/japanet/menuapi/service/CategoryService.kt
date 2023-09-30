@@ -4,10 +4,12 @@ import com.japanet.menuapi.controller.request.v1.CategoryRequest
 import com.japanet.menuapi.controller.request.v1.PatchCategoryRequest
 import com.japanet.menuapi.dto.CategoryDTO
 import com.japanet.menuapi.entity.CategoryEntity
+import com.japanet.menuapi.exception.CategoryHasItemAssignedException
 import com.japanet.menuapi.exception.CategoryNotFoundException
 import com.japanet.menuapi.mapper.CategoryMapper
 import com.japanet.menuapi.repository.CategoryRepository
 import com.japanet.menuapi.utils.log.Logging
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
@@ -56,6 +58,7 @@ class CategoryService(
         repository.deleteById(id)
     }.onFailure {
         if (it is EmptyResultDataAccessException) throw CategoryNotFoundException("Category not found with id: $id")
+        if (it is DataIntegrityViolationException) throw CategoryHasItemAssignedException("Category with id: $id has items assigned")
         else throw it
     }
 

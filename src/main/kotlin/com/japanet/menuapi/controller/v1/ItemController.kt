@@ -11,8 +11,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.HttpStatus.CREATED
-import org.springframework.http.HttpStatus.OK
+import org.springframework.http.HttpStatus.*
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -43,15 +42,17 @@ class ItemController(
     ): Page<ItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
-
     /*
 
         TODO PATCH item
 
-        TODO DELETE item
-
      */
 
+    @Logging
+    @ResponseStatus(NO_CONTENT)
+    @DeleteMapping(value = ["/{id}"])
+    @ApiOperation("Remove um item pelo id")
+    fun delete(@PathVariable id: Long) = service.delete(id)
 
     @Logging
     @ResponseStatus(CREATED)

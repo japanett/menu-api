@@ -64,7 +64,9 @@ class EntitiesGenerator {
                 ))
         }
 
-    fun createItem(menu: MenuEntity? = null, additionalItem: MutableList<AdditionalItemEntity>? = null): ItemEntity = createCategory(menu = menu)
+    fun createItem(menu: MenuEntity? = null,
+                   additionalItem: MutableList<AdditionalItemEntity>? = null
+    ): ItemEntity = createCategory(menu = menu)
         .run {
             itemRepository.save(
                 ItemEntity(

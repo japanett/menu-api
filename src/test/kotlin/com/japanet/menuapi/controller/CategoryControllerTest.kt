@@ -13,7 +13,6 @@ class CategoryControllerTest : AbstractTest() {
 
     companion object {
         private const val URI = "/categories"
-        private const val MOCK_PATH = "/sql/controller/categories"
         private const val PAYLOAD_PATH = "categories"
     }
 
@@ -129,6 +128,17 @@ class CategoryControllerTest : AbstractTest() {
 
         super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/${entity.id!!}"))
             .andExpect(status().isNoContent)
+            .andDo(print())
+    }
+
+    @Test
+    fun `delete an existing category with item assigned`() {
+        val item = super.entitiesGenerator.createItem()
+        val category = item.category
+
+        super.mockMvc.perform(MockMvcRequestBuilders.delete("$URI/${category?.id!!}"))
+            .andExpect(status().isUnprocessableEntity)
+            .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
 

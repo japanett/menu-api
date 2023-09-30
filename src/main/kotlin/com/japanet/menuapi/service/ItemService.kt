@@ -11,6 +11,7 @@ import com.japanet.menuapi.mapper.ItemMapper
 import com.japanet.menuapi.repository.ItemRepository
 import com.japanet.menuapi.utils.log.Logging
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -44,6 +45,16 @@ class ItemService(
 
         return if (pagedResult.content.isNotEmpty()) pagedResult
         else throw ItemNotFoundException("Item not found with parameters: $request")
+    }
+
+    @Logging
+    fun delete(id: Long) {
+        runCatching {
+            repository.deleteById(id)
+        }.onFailure {
+            if (it is EmptyResultDataAccessException) throw ItemNotFoundException("Item not found with id: $id")
+            else throw it
+        }
     }
 
     @Logging

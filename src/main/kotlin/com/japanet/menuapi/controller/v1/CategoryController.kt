@@ -53,6 +53,6 @@ class CategoryController(
     @Logging
     @ResponseStatus(NO_CONTENT)
     @DeleteMapping(value = ["/{id}"])
-    @ApiOperation("Remove categoria")
+    @ApiOperation("Remove categoria pelo id")
     fun delete(@PathVariable id: Long) = service.delete(id)
 }

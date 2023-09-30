@@ -65,7 +65,8 @@ class MenuapiAdvice(
     @ExceptionHandler(value = [
         DuplicateEstablishmentException::class,
         AdditionalItemAlreadyAssignedException::class,
-        UnassignAdditionalItemException::class])
+        UnassignAdditionalItemException::class,
+        CategoryHasItemAssignedException::class])
     fun handleDuplicatedDataException(ex: Exception): ResponseEntity<ErrorResponseWrapper> {
         log.error { "C=${this::class.simpleName}, M=${this::handleDuplicatedDataException.name}, e=${ex}" }
         return ResponseEntity

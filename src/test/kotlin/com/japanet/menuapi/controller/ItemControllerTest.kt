@@ -3,7 +3,10 @@ package com.japanet.menuapi.controller
 import com.japanet.menuapi.AbstractTest
 import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
+import com.japanet.menuapi.repository.AdditionalItemRepository
+import com.japanet.menuapi.repository.CategoryRepository
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -11,8 +14,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.math.BigDecimal
+import kotlin.test.assertTrue
 
 class ItemControllerTest : AbstractTest() {
+
+    @Autowired
+    private lateinit var additionalItemRepository: AdditionalItemRepository
+
+    @Autowired
+    private lateinit var categoryRepository: CategoryRepository
 
     companion object {
         private const val URI = "/items"
@@ -272,6 +282,31 @@ class ItemControllerTest : AbstractTest() {
 
         super.mockMvc.perform(delete("$URI/${item.id!!}/additional-item").contentType(APPLICATION_JSON).content(payload))
             .andExpect(status().isUnprocessableEntity)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `delete item`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val additionalItem = super.entitiesGenerator.createAdditionalItem(menu)
+        val item = super.entitiesGenerator.createItem(menu, mutableListOf(additionalItem))
+
+        super.mockMvc.perform(delete("$URI/${item.id!!}"))
+            .andExpect(status().isNoContent)
+            .andDo(print())
+
+        val additionalAfter = additionalItemRepository.findById(additionalItem.id!!)
+        val categoryAfter = categoryRepository.findById(item.category?.id!!)
+
+        assertTrue { additionalAfter.isPresent }
+        assertTrue { categoryAfter.isPresent }
+    }
+
+    @Test
+    fun `delete item not found`() {
+        super.mockMvc.perform(delete("$URI/123"))
+            .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
