@@ -48,8 +48,6 @@ val mysqlConnectorVersion = "8.0.33"
 val springCloudVersion = "2020.0.0"
 val springCloudStreamVersion = "3.1.0"
 val awaitilityVersion = "3.1.6"
-val kafkaAvroSerializerVersion = "5.1.0"
-val avroVersion = "1.8.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -76,7 +74,6 @@ dependencies {
 	implementation("org.json:json:20201115")
 	implementation("org.hibernate:hibernate-validator:$springValidator")
 	implementation("mysql:mysql-connector-java:$mysqlConnectorVersion")
-	implementation("org.apache.avro:avro:$avroVersion")
 	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
