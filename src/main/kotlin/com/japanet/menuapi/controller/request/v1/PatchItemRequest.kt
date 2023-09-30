@@ -8,4 +8,7 @@ data class PatchItemRequest(@field:NotEmpty val changes: Map<String, Any?> = map
 
     val name: String? by changes
 
+    val description: String? by changes
+
+    val price: String? by changes
 }

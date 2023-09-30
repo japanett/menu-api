@@ -310,4 +310,44 @@ class ItemControllerTest : AbstractTest() {
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
+
+    @Test
+    fun `patch item`() {
+        val item = super.entitiesGenerator.createItem()
+        val payload = super.getContent("$PAYLOAD_PATH/patch_item")
+
+        super.mockMvc.perform(patch("$URI/${item.id!!}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").value(item.menu.id))
+            .andExpect(jsonPath("$.categoryId").value(item.category!!.id))
+            .andExpect(jsonPath("$.category").value(item.category!!.name))
+            .andExpect(jsonPath("$.name").value("Hamburgao"))
+            .andExpect(jsonPath("$.description").value("Hamburgao da Beth"))
+            .andExpect(jsonPath("$.price").value(24.69))
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch item with invalid price`() {
+        val item = super.entitiesGenerator.createItem()
+        val payload = super.getContent("$PAYLOAD_PATH/patch_item_invalid_price")
+
+        super.mockMvc.perform(patch("$URI/${item.id!!}").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `patch item not found`() {
+        val payload = super.getContent("$PAYLOAD_PATH/patch_item")
+
+        super.mockMvc.perform(patch("$URI/404").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
 }

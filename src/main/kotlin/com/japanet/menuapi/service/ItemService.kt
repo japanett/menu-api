@@ -2,6 +2,7 @@ package com.japanet.menuapi.service
 
 import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.ItemRequest
+import com.japanet.menuapi.controller.request.v1.PatchItemRequest
 import com.japanet.menuapi.dto.ItemDTO
 import com.japanet.menuapi.entity.ItemEntity
 import com.japanet.menuapi.exception.AdditionalItemAlreadyAssignedException
@@ -9,6 +10,7 @@ import com.japanet.menuapi.exception.ItemNotFoundException
 import com.japanet.menuapi.exception.UnassignAdditionalItemException
 import com.japanet.menuapi.mapper.ItemMapper
 import com.japanet.menuapi.repository.ItemRepository
+import com.japanet.menuapi.utils.FormatValueUtils
 import com.japanet.menuapi.utils.log.Logging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
@@ -48,14 +50,21 @@ class ItemService(
     }
 
     @Logging
-    fun delete(id: Long) {
-        runCatching {
-            repository.deleteById(id)
-        }.onFailure {
-            if (it is EmptyResultDataAccessException) throw ItemNotFoundException("Item not found with id: $id")
-            else throw it
+    fun patch(request: PatchItemRequest, id: Long): ItemDTO  = run {
+        val entity = repository.findById(id)
+            .orElseThrow { ItemNotFoundException("Item not found with id: $id") }
+
+        request.changes.forEach { entry ->
+            run {
+                when (entry.key) {
+                    "name" -> entity.name = entry.value.toString()
+                    "description" -> entity.description = entry.value.toString()
+                    "price" -> entity.price = FormatValueUtils.convertPrice(request.price)
+                }
+            }
         }
-    }
+        repository.save(entity)
+    }.let { mapper.toDTO(it) }
 
     @Logging
     @Transactional
@@ -83,6 +92,16 @@ class ItemService(
 
         repository.saveAndFlush(item)
     }.let { mapper.toDTO(it) }
+
+    @Logging
+    fun delete(id: Long) {
+        runCatching {
+            repository.deleteById(id)
+        }.onFailure {
+            if (it is EmptyResultDataAccessException) throw ItemNotFoundException("Item not found with id: $id")
+            else throw it
+        }
+    }
 
     private fun retrieveByIdAndMenuId(id: Long, menuId: Long): ItemEntity = repository.findByIdAndMenuId(id, menuId)
         .orElseThrow { ItemNotFoundException("Item not found with id: $id and menuId: $menuId") }

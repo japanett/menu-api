@@ -3,6 +3,7 @@ package com.japanet.menuapi.controller.v1
 import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
 import com.japanet.menuapi.controller.request.v1.ItemRequest
+import com.japanet.menuapi.controller.request.v1.PatchItemRequest
 import com.japanet.menuapi.controller.response.v1.ItemResponse
 import com.japanet.menuapi.mapper.ItemMapper
 import com.japanet.menuapi.service.ItemService
@@ -42,11 +43,17 @@ class ItemController(
     ): Page<ItemResponse> = service.retrieveByFilter(request, pageable)
         .map { mapper.toResponse(it) }
 
-    /*
+    @Logging
+    @ResponseStatus(OK)
+    @PatchMapping(value = ["/{id}"])
+    @ApiOperation("Atualiza item pelos parametros informados")
+    fun patch(
+        @PathVariable id: Long,
+        @RequestBody @Valid request: PatchItemRequest
+    ): ItemResponse = service.patch(request, id)
+        .let { mapper.toResponse(it) }
 
-        TODO PATCH item
-
-     */
+    //TODO Create endpoint to change categories of an item
 
     @Logging
     @ResponseStatus(NO_CONTENT)
