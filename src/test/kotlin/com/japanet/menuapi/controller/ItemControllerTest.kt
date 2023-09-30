@@ -2,6 +2,7 @@ package com.japanet.menuapi.controller
 
 import com.japanet.menuapi.AbstractTest
 import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
+import com.japanet.menuapi.controller.request.v1.ChangeItemCategoryRequest
 import com.japanet.menuapi.controller.request.v1.CreateItemRequest
 import com.japanet.menuapi.repository.AdditionalItemRepository
 import com.japanet.menuapi.repository.CategoryRepository
@@ -350,4 +351,56 @@ class ItemControllerTest : AbstractTest() {
             .andExpect(jsonPath("$.errors[0].message").exists())
             .andDo(print())
     }
+
+    @Test
+    fun `change item category`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val additionalItem = super.entitiesGenerator.createAdditionalItem(menu)
+        val item = super.entitiesGenerator.createItem(menu, mutableListOf(additionalItem))
+
+        val categoryName = "Enlatadao"
+        val category = super.entitiesGenerator.createCategory(categoryName, menu = menu)
+
+        val payload = super.mapper.writeValueAsBytes(ChangeItemCategoryRequest(
+            categoryId = category.id!!,
+            menuId = menu.id!!
+        ))
+
+        super.mockMvc.perform(put("$URI/${item.id!!}/category").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").exists())
+            .andExpect(jsonPath("$.menuId").value(item.menu.id))
+            .andExpect(jsonPath("$.categoryId").value(category.id))
+            .andExpect(jsonPath("$.category").value(categoryName))
+            .andExpect(jsonPath("$.name").exists())
+            .andExpect(jsonPath("$.description").exists())
+            .andExpect(jsonPath("$.price").exists())
+            .andExpect(jsonPath("$.additionalItems.length()").value(1))
+            .andExpect(jsonPath("$.additionalItems[0].id").value(additionalItem.id))
+            .andExpect(jsonPath("$.additionalItems[0].name").value(additionalItem.name))
+            .andExpect(jsonPath("$.additionalItems[0].description").value(additionalItem.description))
+            .andExpect(jsonPath("$.additionalItems[0].price").value(additionalItem.price))
+            .andExpect(jsonPath("$.additionalItems[0].datUpdate").exists())
+            .andExpect(jsonPath("$.additionalItems[0].datCreation").exists())
+            .andExpect(jsonPath("$.datUpdate").exists())
+            .andExpect(jsonPath("$.datCreation").exists())
+            .andDo(print())
+    }
+
+    @Test
+    fun `change item category not found`() {
+        val menu = super.entitiesGenerator.createEmptyMenu()
+        val item = super.entitiesGenerator.createItem(menu)
+
+        val payload = super.mapper.writeValueAsBytes(ChangeItemCategoryRequest(
+            categoryId = 404,
+            menuId = menu.id!!
+        ))
+
+        super.mockMvc.perform(put("$URI/${item.id!!}/category").contentType(APPLICATION_JSON).content(payload))
+            .andExpect(status().isNotFound)
+            .andExpect(jsonPath("$.errors[0].message").exists())
+            .andDo(print())
+    }
+
 }

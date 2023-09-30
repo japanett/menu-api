@@ -62,7 +62,7 @@ class CategoryService(
         else throw it
     }
 
-    fun retrieveById(id: Long): CategoryEntity = repository.findById(id)
-        .orElseThrow { CategoryNotFoundException("Category not found with id: $id") }
+    fun retrieveByIdAndMenuId(id: Long, menuId: Long): CategoryEntity = repository.findByIdAndMenuId(id, menuId)
+        .orElseThrow { CategoryNotFoundException("Category not found with id: $id and menuId: $menuId") }
 
 }

@@ -1,6 +1,7 @@
 package com.japanet.menuapi.service
 
 import com.japanet.menuapi.controller.request.v1.AssignAdditionalItemRequest
+import com.japanet.menuapi.controller.request.v1.ChangeItemCategoryRequest
 import com.japanet.menuapi.controller.request.v1.ItemRequest
 import com.japanet.menuapi.controller.request.v1.PatchItemRequest
 import com.japanet.menuapi.dto.ItemDTO
@@ -34,7 +35,7 @@ class ItemService(
         .run { mapper.toEntity(
             this,
             menuService.retrieveById(this.menuId!!),
-            categoryService.retrieveById(this.categoryId!!))
+            categoryService.retrieveByIdAndMenuId(this.categoryId!!, this.menuId))
         }
         .run { repository.save(this) }
         .let { mapper.toDTO(it)}
@@ -69,7 +70,7 @@ class ItemService(
     @Logging
     @Transactional
     fun assignAdditionalItem(id: Long, request: AssignAdditionalItemRequest): ItemDTO = runCatching {
-        val item = retrieveByIdAndMenuId(id, request.menuId)
+        val item = retrieveItemByIdAndMenuId(id, request.menuId)
         val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.additionalItemId, request.menuId)
 
         item.additionalItems?.add(additionalItem)
@@ -83,7 +84,7 @@ class ItemService(
     @Logging
     @Transactional
     fun unassignAdditionalItem(id: Long, request: AssignAdditionalItemRequest): ItemDTO = run {
-        val item = retrieveByIdAndMenuId(id, request.menuId)
+        val item = retrieveItemByIdAndMenuId(id, request.menuId)
         val additionalItem = additionalItemService.retrieveByIdAndMenuId(request.additionalItemId, request.menuId)
 
         if (item.additionalItems?.contains(additionalItem) == false) throw UnassignAdditionalItemException("Item with id: $id does not contain additional item with id: ${request.additionalItemId}")
@@ -92,6 +93,12 @@ class ItemService(
 
         repository.saveAndFlush(item)
     }.let { mapper.toDTO(it) }
+
+    @Logging
+    fun changeCategory(id: Long, request: ChangeItemCategoryRequest): ItemDTO = retrieveItemByIdAndMenuId(id, request.menuId)
+        .apply { this.category = categoryService.retrieveByIdAndMenuId(request.categoryId, request.menuId) }
+        .run { repository.save(this) }
+        .let { mapper.toDTO(it) }
 
     @Logging
     fun delete(id: Long) {
@@ -103,6 +110,6 @@ class ItemService(
         }
     }
 
-    private fun retrieveByIdAndMenuId(id: Long, menuId: Long): ItemEntity = repository.findByIdAndMenuId(id, menuId)
+    private fun retrieveItemByIdAndMenuId(id: Long, menuId: Long): ItemEntity = repository.findByIdAndMenuId(id, menuId)
         .orElseThrow { ItemNotFoundException("Item not found with id: $id and menuId: $menuId") }
 }
